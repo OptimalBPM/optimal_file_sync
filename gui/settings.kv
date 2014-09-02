@@ -1,0 +1,201 @@
+#:import DirSelector gui.dirselector
+#:import HostSelector gui.hostselector
+#:import SMBSelector gui.smbselector
+#:import SMBSelector gui.settings
+<SettingsFrame>
+    orientation: 'lr-tb'
+    Carousel:
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 1
+            Label:
+                valign:"top"
+                height: 65
+                font_size:50
+                size_hint_y: None
+                text:'Where to sync from'
+            AnchorLayout:
+                anchor_y:"top"
+                size_hint_y: 1
+                DirSelector:
+                    valign:"top"
+                    id: sourcedir_select
+                    font_size:40
+                    selector_height: root.height - 200
+                    input_height: 120
+                    caption: 'Source folder'
+            AnchorLayout:
+                anchor_y:"bottom"
+                Label:
+                    valign:"top"
+                    height: 65
+                    font_size:30
+                    size_hint_y: None
+                    text:'Swipe for more >>'
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 1
+            Label:
+                height: 65
+                font_size:50
+                size_hint_y: None
+                text:'Destination SMB Host & credentials'
+            HostSelector:
+                id: destination_host
+                font_size:40
+                input_height: 120
+                selector_height: 150
+                caption: 'Host'
+
+            Widget:
+                size_hint_y: None
+                height: 10
+
+            Button:
+                id: btn_test_connection
+
+                size_hint: (1, None)
+                height: 50
+                font_size:40
+                text:'Test connection(also login if required)'
+                on_press: root.test_connection()
+
+            Label:
+                id: l_test_connection_result
+                size_hint_x: 1
+                height: 50
+                font_size:40
+                size_hint_y: None
+                text:'Not tested.'
+
+            Label:
+                height: 65
+                font_size:40
+                size_hint_y: None
+                text:'Username'
+
+            TextInput:
+                id: destination_username
+                font_size:40
+                height: 65
+                size_hint_y: None
+
+            Label:
+                height: 65
+                font_size:40
+                size_hint_y: None
+                text:'Password'
+
+            TextInput:
+                id: destination_password
+                font_size:40
+                height: 65
+                size_hint_y: None
+
+            Widget:
+
+                size_hint_y: 1
+            Label:
+                height: 65
+                font_size:30
+                size_hint_y: None
+                text:'<< Swipe for more >>'
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 1
+            Label:
+                height: 65
+                font_size:50
+                size_hint_y: None
+                text:'Destination folder (share/folder)'
+            SMBSelector:
+                id: destination_path
+                font_size:40
+                input_height: 120
+                selector_height: root.height - 180
+                caption: 'Folder'
+                host: destination_host.selection
+                username: destination_username.text
+                password: destination_password.text
+
+
+            Label:
+                id: l_test_smbselector_result
+                size_hint_x: 1
+                height: 50
+                font_size:40
+                color: [1, 0, 0, 1]
+                size_hint_y: None
+                text:'Not tested.'
+            AnchorLayout:
+                anchor_y:"bottom"
+                Label:
+                    valign:"top"
+                    height: 65
+                    font_size:30
+                    size_hint_y: None
+                    text:'<< Swipe for more >>'
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 1
+            Label:
+                height: 65
+                font_size:50
+                size_hint_y: None
+                text:'Service'
+            BoxLayout:
+                orientation: 'horizontal'
+                height: 100
+                size_hint_y: None
+                Button:
+                    text:'Start'
+                    font_size:40
+                    size_hint:(0.5, 1.0)
+                    on_press: root.start_service()
+
+                Button:
+                    size_hint:(0.5, 1.0)
+                    font_size:40
+                    text:'Stop'
+                    on_press: root.stop_service()
+
+            Button:
+                text:'Reload settings'
+                font_size:40
+                height: 65
+                size_hint:(1.0, None)
+                on_press: root.reload_settings()
+
+            Label:
+                valign:"top"
+                height: 65
+                font_size:30
+                size_hint_y: None
+                text:'Status/Progress'
+            Label:
+                valign:"top"
+                height: 65
+                id: label_status
+                font_size:30
+                size_hint_y: None
+                text:'Not running'
+            Label:
+                valign:"top"
+                height: 120
+                id: label_progress
+                font_size:30
+                shorten:True
+                text_size:(None, 120)
+                size_hint_y: None
+                text:'No job running'
+
+            AnchorLayout:
+                anchor_y:"bottom"
+                Label:
+                    valign:"top"
+                    height: 65
+                    font_size:30
+                    size_hint_y: None
+                    text:'<< Swipe for more'

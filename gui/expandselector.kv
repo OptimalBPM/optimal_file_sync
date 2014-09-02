@@ -1,0 +1,28 @@
+<ExpandSelector>:
+    orientation: 'vertical'
+    height:self.input_height
+    size_hint_y: None
+    Label:
+        id: selector_label
+        height:self.parent.input_height*0.5
+        font_size:self.parent.font_size
+        size_hint_y: None
+
+    BoxLayout:
+
+        orientation: 'horizontal'
+        height:self.parent.input_height*0.5
+        size_hint_y: None
+
+        id: input_boxlayout
+        TextInput:
+            id: input_selection
+            size_hint_y: 1
+            font_size:self.parent.parent.font_size
+        Button:
+            size_hint_y: 1
+            size_hint_x: None
+            font_size:self.parent.parent.font_size
+            width:60
+            text:'..'
+            on_press: root.switch_selector()

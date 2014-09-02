@@ -1,0 +1,47 @@
+[Job_LocalToLocal]
+type = incremental
+trigger =
+frequency = 30
+source_hostname = 
+source_settings = 
+source_folder = resources/source
+source_username = 
+source_password = 
+destination_hostname =
+destination_settings =
+destination_folder = resources/destination
+destination_username =
+destination_password =
+
+
+[Job_LocalToSMB]
+type = incremental
+trigger = same_subnet
+frequency = 30
+source_hostname =
+source_settings =
+source_folder = resources/source
+source_username =
+source_password =
+destination_hostname = 192.168.0.50
+destination_settings =
+destination_folder = test/test_linux
+destination_username = tester
+destination_password = test
+
+
+[Job_SMBToLocal]
+type = incremental
+trigger = same_subnet
+frequency = 30
+source_hostname = 192.168.0.50
+source_settings =
+source_folder = test/test
+source_username = tester
+source_password = test
+destination_hostname =
+destination_settings =
+destination_folder = resources/destination
+destination_username =
+destination_password =
+

@@ -1,0 +1,15 @@
+[Job_Default]
+type = incremental
+trigger = same_subnet
+frequency = 30
+source_hostname = 
+source_settings = 
+source_folder = service/tests/resources/source
+source_username = 
+source_password = 
+destination_hostname = 192.168.0.50
+destination_settings = 
+destination_folder = test/test_linux
+destination_username = tester
+destination_password = test
+
