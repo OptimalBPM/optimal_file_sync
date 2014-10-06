@@ -79,7 +79,7 @@ class SyncService(object):
     cfg = None
     """Holds an instance of ConfigParser with the settings of the service."""
     oscid = None
-    """The id of the Open SoundControl api socket """
+    """The id of the Open Sound Control api socket """
     stopped = None
     """The service has been told to stop"""
     clock = None

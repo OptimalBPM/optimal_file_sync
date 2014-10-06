@@ -13,7 +13,7 @@ import os
 from shutil import copy
 
 import sys
-# If not, large directory structures will cause an error on android
+# If not, large directory structures will cause an error on Android
 sys.setrecursionlimit(1000)
 
 class OptimalFileSyncApp(App):
