@@ -5,6 +5,7 @@ from gui.dirselector import DirSelector
 
 
 class SMBSelector(DirSelector):
+    """This selector uses the SMBFileSystem class to be able to provide a selector that can navigate SMB shares."""
 
     def init_selector(self, _height):
         _selector = super(SMBSelector, self).init_selector(_height)
@@ -27,6 +28,7 @@ class SMBSelector(DirSelector):
         self.selector = None
 
     def set_path(self,_path):
+        """Set the path of the selector"""
         if _path.replace("/", "") == "":
             return False
 

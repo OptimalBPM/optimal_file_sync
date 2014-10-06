@@ -1,6 +1,6 @@
 from functools import partial
 import sys
-from threading import Timer, Thread
+
 from time import sleep
 from kivy.clock import Clock, ClockBase, mainthread
 from kivy.lib import osc
@@ -75,14 +75,21 @@ def read_default_dir():
 
 
 class SyncService(object):
-    timer = None
+    """The SyncService class is the main class of the service. """
     cfg = None
+    """Holds an instance of ConfigParser with the settings of the service."""
     oscid = None
+    """The id of the Open SoundControl api socket """
     stopped = None
+    """The service has been told to stop"""
     clock = None
+    """A ClockBase object, used for scheduling"""
     jobs = {}
+    """A dict of running jobs"""
     curr_progress = None
+    """The current progress of the running job"""
     curr_status = None
+    """The current status of the service"""
 
     def __init__(self, _cfg_file=None):
 
@@ -103,6 +110,10 @@ class SyncService(object):
 
 
     def start(self, _start_job=False):
+        """
+        Start the service, listen on ports
+        :param _start_job: If containing a string value of a job, run the job.
+        """
 
         self.stopped = False
 
@@ -137,6 +148,7 @@ class SyncService(object):
 
 
     def process_messages(self):
+        """Read messages from osc queue"""
         try:
             osc.readQueue(self.oscid)
         except  Exception as e:
@@ -144,6 +156,7 @@ class SyncService(object):
 
 
     def get_ip_address(self, ifname):
+        """Find out the IP adress of an interface"""
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         return socket.inet_ntoa(fcntl.ioctl(
             s.fileno(),
@@ -152,7 +165,7 @@ class SyncService(object):
         )[20:24])
 
     def _find_active_interface_address(self, _job):
-
+        """Find out what interface is active"""
         _active_ip = None
         _if_name = None
         if platform == "android":
@@ -217,8 +230,12 @@ class SyncService(object):
 
 
     def run_job_once(self, _job, *args):
-        # TODO: Find out why *args is needed, why does clock supply
-        # the mysterious extra argument included even if partial is not.
+        """
+        Runs a job. Once.
+        :param _job: Job to run. An instance of SyncJob.
+        :param args: Needed, howerver, do not know  why.
+        """
+        # TODO: Find out why *args is needed, why does clock supply the mysterious extra argument included even if partial is not.
         _job.running = True
         try:
             if self.stopped is False:
@@ -244,6 +261,7 @@ class SyncService(object):
 
 
     def run_job_osc(self, *args):
+        """Run job from osc parameters. """
         # Parse name
         try:
             notification.notify("Optimal File Sync Service", "Starting job: " + str(args))
@@ -254,6 +272,7 @@ class SyncService(object):
             self.send_status("Failed running job " + str(e))
 
     def run_job(self, _name):
+        """Run a job by its name"""
 
         try:
             _job = self.jobs[_name]
@@ -274,6 +293,7 @@ class SyncService(object):
             self.send_status("Failed to schedule job " + str(e))
 
     def stop(self, *args):
+        """Stop the service."""
         self.send_progress("Shutting down jobs")
         try:
             for _curr_job_name, _curr_job in self.jobs.items():
@@ -302,19 +322,23 @@ class SyncService(object):
         self.send_progress("All jobs shut down.")
 
     def return_progress(self, *args):
+        """Send progress to client"""
         osc.sendMsg(oscAddress='/progress_callback', ipAddr="0.0.0.0", dataArray=[str(self.curr_progress), ],
                     port=3002)
 
     def send_progress(self, _progress):
+        """Set current progress, call return_progress"""
         self.curr_progress = strftime("%Y-%m-%d %H:%M:%S") + ": " + _progress
         self.return_progress()
 
 
     def return_status(self, *args):
+        """Send status to client"""
         osc.sendMsg(oscAddress='/status_callback', ipAddr="0.0.0.0", dataArray=[str(self.curr_status), ],
                     port=3002)
 
     def send_status(self, _status):
+        """Set current status, call return_status"""
         self.curr_status = strftime("%Y-%m-%d %H:%M:%S") + ": " + _status
         self.return_status()
 
@@ -330,6 +354,10 @@ class SyncService(object):
         return _config
 
     def read_config(self, _cfg_file):
+        """
+        Read a config file using a ConfigParser
+        :param _cfg_file: File to parse.
+        """
 
         _cfg = ConfigParser()
         _cfg.read(filenames=[_cfg_file])

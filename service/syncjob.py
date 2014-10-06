@@ -11,7 +11,7 @@ __author__ = 'Nicklas Boerjesson'
 
 class SyncJob(object):
     """
-    A syncronization job
+    This class defines syncronization job
     """
     name = None
     """The name of the job"""
@@ -22,33 +22,54 @@ class SyncJob(object):
     frequency = None
     """How often should the trigger be checked in seconds"""
 
-    source_hostname = None
-    """This is set if the source is a remote host"""
-    source_settings = None
-    source_folder = None
-    source_username = None
-    source_password = None
 
-    destination_hostname = None
-    """This is set if the destination is a remote host"""
+    source_settings = None
+    """Any special settings the source may have"""
+    source_folder = None
+    """The folder of the source files"""
+    source_hostname = None
+    """The host name of the source. This is set if the source is a remote host"""
+    source_username = None
+    """If needed, the user name needed to connect to the source file location"""
+    source_password = None
+    """If needed, the password needed to connect to the source file location"""
+
+
     destination_settings = None
+    """Any special settings the destination may have"""
     destination_folder = None
+    """The folder of the destination files"""
+    destination_hostname = None
+    """The host name of the destination. This is set if the destination is a remote host"""
     destination_username = None
+    """If needed, the user name needed to connect to the destination file location"""
     destination_password = None
+    """If needed, the password needed to connect to the destination file location"""
 
     smb_connection_destination = None
+    """The destination connection."""
+
 
     service = None
+    """The service under which the job is running"""
     stopped = None
-    clock_event = None
+    """If True, the service has been told to stop"""
     running = None
+    """If true, the job is running. Not to be confused with stopped, which means that the job has been told to stop,
+    not that it is running"""
 
     def process_messages(self):
+        """Forward request to process messages to service"""
         if self.service is not None:
             self.service.process_messages()
 
     @classmethod
     def parse(self, _parser, _jobname):
+        """
+        Parse settings from Config parser object
+        :param _parser: Parser object
+        :param _jobname: Name of the job. Without the "job_"-prefix
+        """
         _jobsection = "Job_"+_jobname
         if _parser.has_section(_jobsection):
             _job = SyncJob()
@@ -72,6 +93,11 @@ class SyncJob(object):
 
     @classmethod
     def encode(self, _parser, _job):
+        """
+        Write settings to Config parser object
+        :param _parser: Parser object
+        :param _job: An instance of SyncJob
+        """
         _jobsection = "Job_"+_job.name
         if not _parser.has_section(_jobsection):
             _parser.add_section(_jobsection)
@@ -92,7 +118,12 @@ class SyncJob(object):
 
     @classmethod
     def read_last_synced(self, _job, _smb_connection=None):
-
+        """
+        Read the date and time from the last_synced property of the destination status file
+        :param _job: A SyncJob instance
+        :param _smb_connection: An SMB connection.
+        :return:
+        """
         _cfg = ConfigParser()
         _file_obj = None
         # Is it a remote host?
@@ -116,7 +147,14 @@ class SyncJob(object):
 
     @classmethod
     def write_last_synced(self, _value, _job, _new, _smb_connection=None):
-
+        """
+        Write _value to the last_synced property of the destination status file
+        :param _value: The value to write
+        :param _job: A SyncJob instance
+        :param _new: If there isn't already a history-section
+        :param _smb_connection: An SMB connection.
+        :return:
+        """
         if _new is None:
             if _smb_connection is not None:
                 _file_obj = read_string_file_smb(_smb_connection, os.path.join(_job.destination_folder, 'ofs_status.txt'))
@@ -146,7 +184,12 @@ class SyncJob(object):
 
     @classmethod
     def gather_files(self, _job, _start_date):
-        # List all source files
+        """
+        List all source files
+        :param _job: An instance of SyncJob
+        :param _start_date: The modified date from when to backup
+        """
+
         if _job.source_hostname  and _job.source_hostname != "":
             _file = read_string_file_smb(os.path.join(_job.destination_folder, 'ofs_status.txt'))
         else:

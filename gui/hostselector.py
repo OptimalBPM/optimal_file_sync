@@ -7,6 +7,7 @@ from expandselector import ExpandSelector
 from ScanNetworkForSMB import NonBlockingNetBIOS
 
 class HostSelector(ExpandSelector):
+    """This class provide a means to select available SMB hosts througn NetBIOS"""
 
     def __init__(self, **kwargs):
         """Constructor"""
@@ -24,6 +25,10 @@ class HostSelector(ExpandSelector):
         return _values
 
     def init_selector(self, _height):
+        """ Initializer the selector
+        :param _height: Height of the selector
+        :return: An instance of the selector
+        """
 
         _list_adapter = ListAdapter(data=self.get_values_hosts(),
                            args_converter=list_item_args_converter,
@@ -37,6 +42,7 @@ class HostSelector(ExpandSelector):
         return _selector
 
     def set_selector_text(self, *args):
+        """Set the text of of the selector
         if self.selector and len(self.selector.adapter.selection) > 0:
             self.selection = self.selector.adapter.selection[0].text.split(' ')[0]
             self.switch_selector()

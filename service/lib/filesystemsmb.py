@@ -7,18 +7,27 @@ from service.lib.smbutils import windowfy, smb_connect, split_smb_path
 
 
 class FileSystemSMB(FileSystemAbstract):
+    """This class is an implementation of FileSystemAbstract for SMB"""
     smb = None
+    """A SMB connection"""
     current_dir = None
+    """The current directory"""
     current_service = None
+    """The current service(share)"""
     only_dir = None
+    """Only select directories"""
     items = {"..": [True, False, 0]}
+    """A list of the items in the directory"""
     on_status = None
+    """Event triggered if the status is changed"""
 
     def do_on_status(self, _message):
+        """Trigger the on_status event"""
         if self.on_status is not None:
             self.on_status(_message)
 
     def connect(self, _hostname, _username, _password, _on_status):
+        """Connect to the SMB server"""
         self.on_status = _on_status
         self.do_on_status("")
 
@@ -29,13 +38,21 @@ class FileSystemSMB(FileSystemAbstract):
             return None
 
     def disconnect(self):
+        """Disconnect from the SMB server"""
         try:
 
             self.smb.close()
         except Exception as e:
             self.do_on_status(str(e))
             return None
+
     def list_shares(self, _smb_connection):
+        """
+        List all shares of the connection. Provides a slightly different result set
+        than the lib.smbutils.list_shares()
+        :param _smb_connection: A SMB connection
+        :return: A list of items describing the shares
+        """
         try:
             self.do_on_status("")
             _shares = _smb_connection.listShares()
@@ -53,6 +70,11 @@ class FileSystemSMB(FileSystemAbstract):
 
 
     def listdir(self, _path):
+        """
+        List the files in the path
+        :param _path: The path to be listed
+        :return: A list of items describing the items in the folder
+        """
         try:
             """Mimic the behaviour of a local folder on a SMB server by mixing service and path"""
             print("listdir - " + _path)
@@ -109,6 +131,11 @@ class FileSystemSMB(FileSystemAbstract):
 
 
     def is_hidden(self, _path):
+        """
+        Check if an file system item has the "hidden" attribute
+        :param _path: Path to item
+        :return: True if hidden.
+        """
         try:
             _file = self.items[str(_path.encode('utf-8')).replace('/', '').replace('..', '')]
             print("is_hidden - " + _path + " - " + str(_file[1]))
@@ -118,6 +145,11 @@ class FileSystemSMB(FileSystemAbstract):
             return None
 
     def is_dir(self, _path):
+        """
+        Check if an file system item is a directory
+        :param _path:
+        :return: True if it is a directory
+        """
         try:
             if _path[0:2] == "..":
                 return True
@@ -129,6 +161,11 @@ class FileSystemSMB(FileSystemAbstract):
             self.do_on_status(str(e))
             return None
     def getsize(self, _path):
+        """
+        Return the size of an item.
+        :param _path: Path to item
+        :return: An integer containing the size of the item
+        """
         try:
             _file = self.items[str(_path.encode('utf-8')).replace('/', '').replace('..', '')]
             print("getsize - " + _path + " - " + str(_file[2]))

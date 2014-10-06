@@ -15,6 +15,12 @@ from smbutils import list_shares, windowfy, split_smb_path
 __author__ = 'Nicklas Boerjesson'
 
 def read_string_file_smb(_smb_connection, _path):
+    """
+    Read a string file from an SMB connection returning a file obj.
+    :param _smb_connection: An SMB connection
+    :param _path: The path of the file
+    :return: A file object at pos 0.
+    """
     try:
         _file_obj = StringIO.StringIO()
         _service_name, _path = split_smb_path(_path)
@@ -27,6 +33,12 @@ def read_string_file_smb(_smb_connection, _path):
         raise Exception("Error in read_string_file_smb(path = " +_path +") ("+ e.__class__.__name__+") : " + str(e) )
 
 def write_string_file_smb(_smb_connection, _path, _file_obj):
+    """
+    Write a string file from an SMB connection using a file obj.
+    :param _smb_connection: An SMB connection
+    :param _path: The path of the file
+    :param _file_obj: A file object at pos 0.
+    """
     try:
         _service_name, _path = split_smb_path(_path)
         _file_obj.pos = 0
@@ -109,11 +121,11 @@ def walk_local(_full_path):
 
 def blaze_trail_smb(_directory_path, _smb_connection, _do_progress=None):
     """
-
+    Create folders all the way to the _directory_path on an SMB share
     :param _directory_path: A path to the directory
     :param _smb_connection: The SMBConnection to use
     :param _do_progress: A progress callback
-    :return:
+
     """
     try:
         _service_name, _path = split_smb_path(_directory_path)
@@ -132,6 +144,11 @@ def blaze_trail_smb(_directory_path, _smb_connection, _do_progress=None):
         raise Exception("Error in blaze_trail_smb(path = " +_directory_path +") : " + str(e))
 
 def blaze_trail_local(_path, _do_progress=None):
+    """
+    Create folders all the way to the _directory_path
+    :param _directory_path: A path to the directory
+    :param _do_progress: A progress callback
+    """
     try:
         if not os.path.exists(_path):
             _do_progress("Creating directory: "+ _path)
@@ -140,6 +157,15 @@ def blaze_trail_local(_path, _do_progress=None):
         raise Exception("Error in blaze_trail_local(path = " +_path +") : " + str(e))
 
 def copy_files(_source_paths,  _destination_paths, _context, _smb_connection = None , _job = None):
+    """
+    Copy all files in _source_paths to _destination_paths
+    :param _source_paths: A list of source file paths
+    :param _destination_paths: A list of destination file paths
+    :param _context: A string value describing what should happen. An exceedingly ugly solution, to be changed later.
+    :param _smb_connection: A source or destination SMB connection.
+    :param _job: An instance of SyncJob.
+    :return: Return False on failure, True on success
+    """
     def _do_progress(_message):
         if _job is not None:
             _job.service.send_progress(_message)

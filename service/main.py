@@ -7,7 +7,10 @@ from kivy.utils import platform
 platform = platform()
 
 if __name__ == '__main__':
+    """Initialize the service"""
+
     try:
+        # Import the service main class
         from syncservice import SyncService
     except Exception as e:
         notification.notify("Optimal File Sync Service", "Error in init :" + str(e))

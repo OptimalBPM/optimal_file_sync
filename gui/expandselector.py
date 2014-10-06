@@ -8,17 +8,26 @@ from kivy.lang import Builder
 Builder.load_file('gui/expandselector.kv')
 
 class ExpandSelector(BoxLayout):
-    """ExpandSelector is the superclass for all expanding selectors"""
+    """ExpandSelector is the superclass for all expanding selectors.
+    Expanding selectors has a line where a value can be edited, but also a list view where values can be selected."""
     selector = None
+    """The selector widget"""
     caption = None
+    """The caption of the selector"""
     selection = None
+    """The current selection"""
     selector_height = None
+    """The height of the selector expanded"""
     input_height = None
+    """The height of the input field"""
     font_size = None
+    """The size of the font"""
 
     on_status = None
+    """Triggered on status change"""
 
     def do_on_status(self, _message):
+        """Trigger the on_status event"""
         if self.on_status is not None:
             self.on_status(_message)
 
@@ -27,6 +36,7 @@ class ExpandSelector(BoxLayout):
         super(ExpandSelector, self).__init__(**kwargs)
 
     def init_selector(self, _height):
+        """Things to do when initializing the selector"""
         pass
 
     def after_hide_selector(self):
@@ -34,9 +44,11 @@ class ExpandSelector(BoxLayout):
         pass
 
     def recalc_layout(self):
+        """Recalculate the height of the component"""
         self.height = self.calc_child_height(self)
 
     def switch_selector(self):
+        """Hide selector if visible, show if hidden"""
         self.do_on_status("")
         if not self.selector:
             self.selector = self.init_selector(self.selector_height)
@@ -53,12 +65,18 @@ class ExpandSelector(BoxLayout):
             self.recalc_layout()
 
     def calc_child_height(self, _widget):
+        """Set the total height to the combined height of the children"""
         _result = 0
         for _curr_child in _widget.children:
             _result+= _curr_child.height
         return _result
 
     def set_path(self, _path):
+        """
+        Set the selector path to _path
+        :param _path: A string containing a valid path
+        :return:
+        """
         try:
             self.selector.path = _path
         except Exception as e:
@@ -68,6 +86,7 @@ class ExpandSelector(BoxLayout):
         return True
 
     def set_selector_text(self, *args):
+        """If an item is chosen, reflect that in the input field"""
 
         if self.selector and len(self.selector.selection) > 0:
             _selection = self.selector.selection[0]
@@ -85,15 +104,19 @@ class ExpandSelector(BoxLayout):
 
 
     def _set_caption(self, _value):
+        """Set the caption of the selector"""
         self.ids.selector_label.text = _value
 
     def _get_caption(self):
+        """Get the caption of the selector"""
         return self.ids.selector_label.text
 
     def _set_selection(self, _value):
+        """Set the selection of the selector"""
         self.ids.input_selection.text = _value
 
     def _get_selection(self):
+        """Get the selection of the selector"""
         return self.ids.input_selection.text
 
 

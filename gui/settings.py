@@ -21,10 +21,13 @@ from kivy.lang import Builder
 Builder.load_file("gui/settings.kv")
 
 class SettingsFrame(StackLayout):
-    test_service = None
+    """Settingsframe is the main frame of the application"""
     cfg_file = None
+    """The config file to use"""
     service_status = None
+    """The status of the service"""
     service_progress = None
+    """The progress of the current job"""
 
     def init(self, _cfg_file=None):
         self.ids.destination_host.ids.input_selection.bind(text=self._update_host)
@@ -51,21 +54,32 @@ class SettingsFrame(StackLayout):
 
 
     def do_on_smbselector_status(self, _message):
+        """
+        :param _message: A string message
+        """
         self.ids.l_test_smbselector_result.text = re.sub("(.{40})", "\\1\n", _message, 0, re.DOTALL)
     def process_messages(self, *args):
+        """Receive messages"""
         osc.readQueue(self.oscid)
 
     def status_callback(self, *args):
+        """If the client receives a status message, reflect that in the label_status widget
+        :param args: Message arguments.
+        """
         self.service_running = True
         self.service_status = str(args[0][2])
         self.ids.label_status.text = self.service_status
 
     def progress_callback(self, *args):
+        """If the client receives a progress message, reflect that in the label_progress widget
+        :param args: Message arguments.
+        """
         self.service_running = True
         self.service_progress = str(args[0][2])
         self.ids.label_progress.text = re.sub("(.{40})", "\\1\n", self.service_progress, 0, re.DOTALL)
 
     def start_service(self):
+        """Start the service"""
         self.save_settings()
         print("Starting service")
         self.service_running = False
@@ -95,6 +109,7 @@ class SettingsFrame(StackLayout):
 
 
     def stop_service(self):
+        """Stop the service"""
         print("Asking service to stop.")
         self.service_running = False
 
@@ -114,13 +129,18 @@ class SettingsFrame(StackLayout):
     #######################################################################################
 
     def _update_host(self, *args):
-        #TODO: Why the hell is this needed?
+        """If the host selection is changed, set the host."""
         self.ids.destination_path.host = self.ids.destination_host.ids.input_selection.text
 
     def reload_settings(self):
+        """Reload settings from current settings file"""
         self.load_settings(self.cfg_file)
 
     def load_settings(self, _cfg_file=None):
+        """
+        Load settings from a settings file
+        :param _cfg_file: A file with settings
+        """
         self.cfg_file = _cfg_file
         cfg = ConfigParser.SafeConfigParser()
         cfg.read(_cfg_file)
@@ -132,6 +152,7 @@ class SettingsFrame(StackLayout):
         self.ids.destination_password.text = cfg.get("Job_Default", "destination_password")
 
     def save_settings(self):
+        """Save settings to file"""
         cfg = ConfigParser.SafeConfigParser()
         cfg.read(self.cfg_file)
 
@@ -145,6 +166,7 @@ class SettingsFrame(StackLayout):
         f.close()
 
     def test_connection(self):
+        """Test SMB connection by connecting to a server"""
         try:
             self.ids.l_test_connection_result.text = "Testing..."
             _smb = smb_connect(_hostname=self.ids.destination_host.selection,
