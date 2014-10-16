@@ -22,12 +22,23 @@ class FileSystemSMB(FileSystemAbstract):
     """Event triggered if the status is changed"""
 
     def do_on_status(self, _message):
-        """Trigger the on_status event"""
+        """
+        Trigger the on_status event
+        :param _message: Message to send
+        :return:
+        """
         if self.on_status is not None:
             self.on_status(_message)
 
     def connect(self, _hostname, _username, _password, _on_status):
-        """Connect to the SMB server"""
+        """
+        Connect to the SMB server
+
+        :param _hostname: The name of the host to connect to
+        :param _username: The username
+        :param _password: The password
+        :param _on_status: A callback function to get status messages
+        """
         self.on_status = _on_status
         self.do_on_status("")
 
@@ -67,12 +78,10 @@ class FileSystemSMB(FileSystemAbstract):
             self.do_on_status(str(e))
             return []
 
-
-
     def listdir(self, _path):
         """
         List the files in the path
-        :param _path: The path to be listed
+        :param _path: Path to be listed
         :return: A list of items describing the items in the folder
         """
         try:
@@ -107,15 +116,15 @@ class FileSystemSMB(FileSystemAbstract):
                 try:
                     _files = self.smb.listPath(self.current_service, windowfy(self.current_dir))
                 except Exception as e:
-                    raise Exception("Error listing contents of " + self.current_service + "\\"+ windowfy(self.current_dir) + ": " + e.message)
-
+                    raise Exception("Error listing contents of " + self.current_service + "\\" +
+                                    windowfy(self.current_dir) + ": " + e.message)
 
                 _results = []
                 for _file in _files:
                     if _file.filename not in ('..', '.'):
                         _filename = str(
-                            self.current_service.encode('utf-8') + self.current_dir.encode('utf-8') + _file.filename.encode(
-                                'utf-8')).replace('/', '')
+                            self.current_service.encode('utf-8') + self.current_dir.encode('utf-8') +
+                            _file.filename.encode('utf-8')).replace('/', '')
                         self.items[_filename] = \
                             [
                                 SMB_FILE_ATTRIBUTE_DIRECTORY & _file.file_attributes == SMB_FILE_ATTRIBUTE_DIRECTORY,
@@ -128,7 +137,6 @@ class FileSystemSMB(FileSystemAbstract):
         except Exception as e:
             self.do_on_status(str(e))
             return []
-
 
     def is_hidden(self, _path):
         """
@@ -147,7 +155,7 @@ class FileSystemSMB(FileSystemAbstract):
     def is_dir(self, _path):
         """
         Check if an file system item is a directory
-        :param _path:
+        :param _path: Path to item
         :return: True if it is a directory
         """
         try:
@@ -160,6 +168,7 @@ class FileSystemSMB(FileSystemAbstract):
         except Exception as e:
             self.do_on_status(str(e))
             return None
+
     def getsize(self, _path):
         """
         Return the size of an item.

@@ -2,12 +2,14 @@ __author__ = 'Nicklas Boerjesson'
 
 from smb.SMBConnection import SMBConnection
 
+
 def windowfy(_value):
     """
     Turn backslashes into forward slashes
     :param _value: A string value
     """
     return _value.replace("/", "\\")
+
 
 def split_smb_path(_path):
     """
@@ -20,9 +22,16 @@ def split_smb_path(_path):
     _remote_path = "/".join(_splitted[1:])
     return _service, _remote_path
 
+
 def smb_connect(_hostname, _username, _password):
-    """Connect to a SMB server and return a connection"""
-    _smb = SMBConnection(username = _username, password = _password, my_name = 'client', remote_name = _hostname)
+    """
+    Connect to a SMB server and return a connection
+    :param _hostname: The name of the host to connect to
+    :param _username: The username
+    :param _password: The password
+    :return: Returns an instance of SMBConnection or raises an exception
+    """
+    _smb = SMBConnection(username=_username, password=_password, my_name='client', remote_name=_hostname)
     if _smb.connect(ip=_hostname) is True:
         return _smb
     else:
@@ -36,7 +45,7 @@ def list_shares(_smb_connection):
     :return: A list of lists containing, filename, is directory, size, modified date
     """
     _shares = _smb_connection.listShares()
-    _result=[]
+    _result = []
     for _curr_share in _shares:
         _result.append([_curr_share.name, True, 0, None])
 
